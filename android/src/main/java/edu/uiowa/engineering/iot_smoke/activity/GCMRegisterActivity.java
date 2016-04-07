@@ -8,7 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,6 +22,7 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
+import edu.uiowa.engineering.iot_smoke.Manifest;
 import edu.uiowa.engineering.iot_smoke.R;
 import edu.uiowa.engineering.iot_smoke.registration.Registration;
 import edu.uiowa.engineering.iot_smoke.util.BaseUtils;
@@ -27,6 +32,7 @@ public abstract class GCMRegisterActivity extends AppCompatActivity {
 
     private static final String PREF_ACCOUNT_NAME = "pref_account_name";
     private static final int REQUEST_ACCOUNT_PICKER = 2;
+    private static final int REQUEST_PERMISSIONS = 3;
 
     SharedPreferences settings;
     GoogleAccountCredential credential;
@@ -38,8 +44,22 @@ public abstract class GCMRegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         settings = BaseUtils.getSharedPreferences(this);
-        setService();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{android.Manifest.permission.READ_CONTACTS},
+                    REQUEST_PERMISSIONS
+            );
+        } else {
+            register();
+        }
+    }
+
+    private void register() {
+        setService();
         if (credential.getSelectedAccountName() != null) {
             registerWithBackend();
         } else {
@@ -98,6 +118,25 @@ public abstract class GCMRegisterActivity extends AppCompatActivity {
                         setService();
                         registerWithBackend();
                     }
+                }
+                break;
+            case REQUEST_PERMISSIONS:
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(this, MainActivity.class);
+
+                    finish();
+                    startActivity(intent);
+
+                    overridePendingTransition(0,0);
                 }
                 break;
         }
