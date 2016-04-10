@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/GcmEndpoints
 */
 
-package edu.uiowa.engineering.iot_smoke;
+package edu.uiowa.engineering.iot_smoke.endpoint;
 
 import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
 
+import edu.uiowa.engineering.iot_smoke.data.AccountRecord;
+import edu.uiowa.engineering.iot_smoke.data.DeviceRecord;
+
 import static edu.uiowa.engineering.iot_smoke.OfyService.ofy;
 
 @Api(
@@ -30,6 +33,7 @@ import static edu.uiowa.engineering.iot_smoke.OfyService.ofy;
   )
 )
 public class MessagingEndpoint {
+
     private static final Logger log = Logger.getLogger(MessagingEndpoint.class.getName());
     private static final String API_KEY = System.getProperty("gcm.api.key");
 
@@ -40,25 +44,16 @@ public class MessagingEndpoint {
         }
 
         Sender sender = new Sender(API_KEY);
-        Message msg = new Message.Builder().addData("message", message).build();
-        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
-        for(RegistrationRecord record : records) {
-            Result result = sender.send(msg, record.getRegId(), 5);
-            if (result.getMessageId() != null) {
-                log.info("Message sent to " + record.getRegId());
-                String canonicalRegId = result.getCanonicalRegistrationId();
-                if (canonicalRegId != null) {
-                    log.info("Registration Id changed for " + record.getRegId() + " updating to " + canonicalRegId);
-                    record.setRegId(canonicalRegId);
-                    ofy().save().entity(record).now();
-                }
-            } else {
-                String error = result.getErrorCodeName();
-                if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-                    log.warning("Registration Id " + record.getRegId() + " no longer registered with GCM, removing from datastore");
-                    ofy().delete().entity(record).now();
+        Message gcmMessage = new Message.Builder().addData("message", message).build();
+        List<AccountRecord> accounts = ofy().load().type(AccountRecord.class).limit(10).list();
+
+        for (AccountRecord account : accounts) {
+            for (DeviceRecord record : account.getDeviceList()) {
+                Result result = sender.send(gcmMessage, record.getRegId(), 5);
+                if (result.getMessageId() != null) {
+                    log.info("Message sent to " + record.getRegId());
                 } else {
-                    log.warning("Error when sending message : " + error);
+                    log.warning("Error when sending message : " + result.getErrorCodeName());
                 }
             }
         }

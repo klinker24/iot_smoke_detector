@@ -30,6 +30,8 @@ dependencies {
     compile 'javax.servlet:servlet-api:2.5'
     compile 'com.googlecode.objectify:objectify:5.1.9'
     compile 'com.ganyo:gcm-server:1.0.2'
+
+    compile 'org.jasypt:jasypt:1.9.2'
 }
 
 appengine {

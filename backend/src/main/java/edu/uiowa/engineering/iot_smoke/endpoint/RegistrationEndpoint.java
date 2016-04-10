@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/GcmEndpoints
 */
 
-package edu.uiowa.engineering.iot_smoke;
+package edu.uiowa.engineering.iot_smoke.endpoint;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
@@ -13,9 +13,16 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.oauth.OAuthRequestException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
+
+import edu.uiowa.engineering.iot_smoke.Constants;
+import edu.uiowa.engineering.iot_smoke.DataSource;
+import edu.uiowa.engineering.iot_smoke.Util;
+import edu.uiowa.engineering.iot_smoke.data.AccountRecord;
+import edu.uiowa.engineering.iot_smoke.data.DeviceRecord;
 
 import static edu.uiowa.engineering.iot_smoke.OfyService.ofy;
 
@@ -36,20 +43,37 @@ public class RegistrationEndpoint {
     private static final Logger log = Logger.getLogger(RegistrationEndpoint.class.getName());
 
     @ApiMethod(name = "register")
-    public void registerDevice(@Named("regId") String regId, User user) throws OAuthRequestException {
+    public CollectionResponse<AccountRecord> registerDevice(@Named("deviceType") String deviceType, @Named("regId") String regId, User user)
+            throws OAuthRequestException {
+
         if (user == null) {
             throw new OAuthRequestException("User not authorized.");
         }
 
-        RegistrationRecord record = findRecord(user.getEmail());
-        if(record != null) {
-            ofy().delete().entity(record).now();
+        AccountRecord account = DataSource.findAccountByEmail(user.getEmail());
+        DeviceRecord device = DataSource.findDevice(account, regId);
+
+        if (account == null) {
+            // there is no account for this user yet, so we need to set one up.
+            account = new AccountRecord();
+            account.setEmail(user.getEmail());
+            account.setAuthToken(Util.generateAuthToken(user.getEmail()));
         }
 
-        record = new RegistrationRecord();
-        record.setEmail(user.getEmail());
-        record.setRegId(regId);
-        ofy().save().entity(record).now();
+        if (device == null) {
+            device = new DeviceRecord();
+            device.setDeviceType(deviceType);
+            device.setRegId(regId);
+
+            account.addDevice(device);
+        }
+
+        ofy().save().entity(account).now();
+
+        return CollectionResponse
+                .<AccountRecord>builder()
+                .setItems(Arrays.asList(account))
+                .build();
     }
 
     @ApiMethod(name = "unregister")
@@ -57,22 +81,24 @@ public class RegistrationEndpoint {
         if (user == null) {
             throw new OAuthRequestException("User not authorized.");
         }
-        RegistrationRecord record = findRecord(user.getEmail());
-        if(record == null) {
+
+        AccountRecord account = DataSource.findAccountByEmail(user.getEmail());
+        if(account == null) {
             log.info(user.getEmail() + " not registered, skipping unregister");
             return;
         }
-        ofy().delete().entity(record).now();
+
+        ofy().delete().entity(account).now();
     }
 
     @ApiMethod(name = "listDevices")
-    public CollectionResponse<RegistrationRecord> listDevices(@Named("count") int count, User user) throws OAuthRequestException {
+    public CollectionResponse<AccountRecord> listDevices(User user) throws OAuthRequestException {
         if (user == null) {
             throw new OAuthRequestException("User not authorized.");
         }
 
-        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(count).list();
-        return CollectionResponse.<RegistrationRecord>builder().setItems(records).build();
+        List<AccountRecord> records = ofy().load().type(AccountRecord.class).limit(100).list();
+        return CollectionResponse.<AccountRecord>builder().setItems(records).build();
     }
 
     @ApiMethod(name = "deleteAll")
@@ -81,11 +107,7 @@ public class RegistrationEndpoint {
             throw new OAuthRequestException("User not authorized.");
         }
 
-        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();
+        List<AccountRecord> records = ofy().load().type(AccountRecord.class).list();
         ofy().delete().entities(records).now();
-    }
-
-    private RegistrationRecord findRecord(String email) {
-        return ofy().load().type(RegistrationRecord.class).filter("email", email).first().now();
     }
 }

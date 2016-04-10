@@ -4,15 +4,14 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
-/**
- * Objectify service wrapper so we can statically register our persistence classes
- * More on Objectify here : https://code.google.com/p/objectify-appengine/
- *
- */
+import edu.uiowa.engineering.iot_smoke.data.AccountRecord;
+import edu.uiowa.engineering.iot_smoke.data.DeviceRecord;
+
 public class OfyService {
 
     static {
-        ObjectifyService.register(RegistrationRecord.class);
+        ObjectifyService.register(DeviceRecord.class);
+        ObjectifyService.register(AccountRecord.class);
     }
 
     public static Objectify ofy() {
