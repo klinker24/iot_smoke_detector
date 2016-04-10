@@ -91,8 +91,8 @@ public class RegistrationEndpoint {
         ofy().delete().entity(account).now();
     }
 
-    @ApiMethod(name = "listDevices")
-    public CollectionResponse<AccountRecord> listDevices(User user) throws OAuthRequestException {
+    @ApiMethod(name = "listAccounts")
+    public CollectionResponse<AccountRecord> listAccounts(User user) throws OAuthRequestException {
         if (user == null) {
             throw new OAuthRequestException("User not authorized.");
         }
@@ -101,8 +101,8 @@ public class RegistrationEndpoint {
         return CollectionResponse.<AccountRecord>builder().setItems(records).build();
     }
 
-    @ApiMethod(name = "deleteAll")
-    public void deleteAllUsers(User user) throws OAuthRequestException {
+    @ApiMethod(name = "deleteAllAccounts")
+    public void deleteAllAccounts(User user) throws OAuthRequestException {
         if (user == null) {
             throw new OAuthRequestException("User not authorized.");
         }

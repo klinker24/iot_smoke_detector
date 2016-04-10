@@ -14,7 +14,7 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>edu.uiowa.engineering.iot_smoke.endpoint.RegistrationEndpoint,
-                edu.uiowa.engineering.iot_smoke.endpoint.MessagingEndpoint</param-value>
+                edu.uiowa.engineering.iot_smoke.endpoint.AirQualityEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
