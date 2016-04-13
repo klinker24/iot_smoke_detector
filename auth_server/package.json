@@ -1,0 +1,19 @@
+{
+  "name": "auth_server",
+  "version": "1.0.0",
+  "description": "Simple RSA auth server for a raspberry pi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klinker24/iot_smoke_detector.git"
+  },
+  "author": "Jake Klinker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/klinker24/iot_smoke_detector/issues"
+  },
+  "homepage": "https://github.com/klinker24/iot_smoke_detector#readme"
+}
