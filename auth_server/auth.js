@@ -25,10 +25,16 @@ dispatcher.onGet("/auth", function(req, res) {
 });
 
 dispatcher.onPost("/auth", function(req, res) {
-	var encryptedMessage = req.params['message'];
+	var encryptedMessage = req.params['message'].split(' ').join('+');
 	var decryptedMessage = key.decrypt(encryptedMessage, 'utf-8');
 	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.end(decryptedMessage);
+	res.end("");
+
+	// TODO do something with the decrypted message, which will contain a 
+	//      user id and an auth token, separated by a comma. I think it
+	//      would work well to set these as environment variables to easily
+	//	be accessed from our other code that takes readings of air
+	//      quality.
 });
 
 // create a server
