@@ -26,8 +26,9 @@ dispatcher.onGet("/auth", function(req, res) {
 
 dispatcher.onPost("/auth", function(req, res) {
 	var encryptedMessage = req.params['message'];
+	var decryptedMessage = key.decrypt(encryptedMessage, 'utf-8');
 	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.end(key.exportKey("pkcs8-private"));
+	res.end(decryptedMessage);
 });
 
 // create a server
