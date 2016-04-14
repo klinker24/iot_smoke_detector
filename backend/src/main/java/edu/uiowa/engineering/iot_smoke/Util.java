@@ -15,9 +15,9 @@ public class Util {
      */
     public static String generateAuthToken(String email) {
         String key = UUID.randomUUID().toString().toUpperCase() +
-                "|" + "iot_smoke_project_token" +
                 "|" + email +
-                "|" + new Date().getTime();
+                "|" + new Date().getTime() +
+                "|" + "iot_smoke_project_token";
 
         StandardPBEStringEncryptor jasypt = new StandardPBEStringEncryptor();
         jasypt.setPassword("iot_smoke");
