@@ -6,3 +6,4 @@ local.properties
 .idea/
 *.log
 *.avi
+auth_server/auth.txt
