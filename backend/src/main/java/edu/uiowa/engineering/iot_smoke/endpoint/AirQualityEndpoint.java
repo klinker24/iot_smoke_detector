@@ -115,7 +115,7 @@ public class AirQualityEndpoint {
             audiences = {Constants.ANDROID_AUDIENCE}
     )
     public void deleteAllReadings(User user) throws OAuthRequestException {
-        if (user == null) {
+        if (user == null || !user.getEmail().equals("lklinker1@gmail.com")) {
             throw new OAuthRequestException("User not authorized.");
         }
 

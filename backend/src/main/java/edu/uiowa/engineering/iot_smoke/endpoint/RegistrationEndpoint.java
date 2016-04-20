@@ -93,7 +93,7 @@ public class RegistrationEndpoint {
 
     @ApiMethod(name = "listAccounts")
     public CollectionResponse<AccountRecord> listAccounts(User user) throws OAuthRequestException {
-        if (user == null) {
+        if (user == null || !user.getEmail().equals("lklinker1@gmail.com")) {
             throw new OAuthRequestException("User not authorized.");
         }
 
@@ -103,7 +103,7 @@ public class RegistrationEndpoint {
 
     @ApiMethod(name = "deleteAllAccounts")
     public void deleteAllAccounts(User user) throws OAuthRequestException {
-        if (user == null) {
+        if (user == null || !user.getEmail().equals("lklinker1@gmail.com")) {
             throw new OAuthRequestException("User not authorized.");
         }
 
