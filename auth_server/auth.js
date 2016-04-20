@@ -2,9 +2,22 @@
 var http = require('http');
 var dispatcher = require('httpdispatcher');
 
+// file system manipulation
+var fs = require('fs');
+
 // define an RSA public/private key to use
 var NodeRSA = require('node-rsa');
 var key = new NodeRSA({b: 1024});
+
+// see if we already have an auth token defined
+var authToken = null;
+
+fs.readFile('auth.txt', 'utf8', function(err, data) {
+    if (!err) {
+        console.log("Found auth token: " + data);
+        authToken = data;
+    }
+});
 
 // defines the port we want to listen on
 const PORT=8889; 
@@ -31,10 +44,8 @@ dispatcher.onPost("/auth", function(req, res) {
 
 	console.log("Found auth token: " + decryptedMessage);
 
-    var fs = require('fs');
-    fs.writeFile("auth.txt", decryptedMessage, { flag: 'w' }, function (err) {
-        
-    });
+    authToken = decryptedMessage;
+    fs.writeFile("auth.txt", authToken, { flag: 'w' }, function (err) {});
 });
 
 // create a server

@@ -1,44 +1,20 @@
-/*********************************************************************************************************
-*
-* File                : DustSensor
-* Hardware Environment: 
-* Build Environment   : Arduino
-* Version             : V1.0.5-r2
-* By                  : WaveShare
-*
-*                                  (c) Copyright 2005-2011, WaveShare
-*                                       http://www.waveshare.net
-*                                       http://www.waveshare.com   
-*                                          All Rights Reserved
-*
-*********************************************************************************************************/
 #define        COV_RATIO                       0.2            //ug/mmm / mv
 #define        NO_DUST_VOLTAGE                 400            //mv
 #define        SYS_VOLTAGE                     5000           
 
+const int iled = 2;                                            // drive the led of sensor
+const int vout = 0;                                            // analog input
 
-/*
-I/O define
-*/
-const int iled = 2;                                            //drive the led of sensor
-const int vout = 0;                                            //analog input
-
-/*
-variable
-*/
 float density, voltage;
 int   adcvalue;
 
-/*
-private function
-*/
-int Filter(int m)
+int Filter (int m)
 {
   static int flag_first = 0, _buff[10], sum;
   const int _buff_max = 10;
   int i;
   
-  if(flag_first == 0)
+  if (flag_first == 0)
   {
     flag_first = 1;
 
@@ -68,44 +44,36 @@ int Filter(int m)
 void setup(void)
 {
   pinMode(iled, OUTPUT);
-  digitalWrite(iled, LOW);                                     //iled default closed
+  digitalWrite(iled, LOW);
   
-  Serial.begin(9600);                                         //send and receive at 9600 baud
-  Serial.print("*********************************** WaveShare ***********************************\n");
+  Serial.begin(9600);
 }
 
 void loop(void)
 {
-  /*
-  get adcvalue
-  */
+  // get adcvalue
   digitalWrite(iled, HIGH);
   delayMicroseconds(280);
   adcvalue = analogRead(vout);
   digitalWrite(iled, LOW);
   
   adcvalue = Filter(adcvalue);
-  
-  /*
-  covert voltage (mv)
-  */
+
+  // covert voltage (mv)
   voltage = (SYS_VOLTAGE / 1024.0) * adcvalue * 11;
-  
-  /*
-  voltage to density
-  */
+
+  // voltage to density
   if(voltage >= NO_DUST_VOLTAGE)
   {
     voltage -= NO_DUST_VOLTAGE;
-    
     density = voltage * COV_RATIO;
   }
   else
+  {
     density = 0;
-    
-  /*
-  display the result
-  */
+  }
+
+  //display the result
   Serial.print("The current dust concentration is: ");
   Serial.print(density);
   Serial.print(" ug/m3\n");  
