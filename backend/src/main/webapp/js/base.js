@@ -14,10 +14,14 @@ appengine.signedIn = false;
 
 // Loads the application UI after the user has completed auth.
 appengine.userAuthed = function() {
+  console.log("user authorized function");
+
   var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
     if (!resp.code) {
       appengine.signedIn = true;
-      document.querySelector('#signinButton').textContent = 'Sign out';
+      document.getElementById('email').textContent = resp.email;
+      document.getElementById('userPicture').src = resp.picture;
+      document.getElementById('signinText').textContent = 'Sign out';
       appengine.listReadings();
     }
   });
@@ -29,6 +33,8 @@ appengine.userAuthed = function() {
  * @param {Function} callback Callback to call on completion.
  */
 appengine.signin = function(mode, callback) {
+  console.log("sign in function");
+
   gapi.auth.authorize({client_id: appengine.CLIENT_ID,
       scope: appengine.SCOPES, immediate: mode},
       callback);
@@ -36,6 +42,8 @@ appengine.signin = function(mode, callback) {
 
 // Presents the user with the authorization popup.
 appengine.auth = function() {
+  console.log("auth function");
+
   if (!appengine.signedIn) {
     appengine.signin(false, appengine.userAuthed);
   } else {
@@ -45,7 +53,7 @@ appengine.auth = function() {
     var loadingDiv = document.getElementById('loadingData');
     var dataDiv = document.getElementById('data');
 
-    document.querySelector('#signinButton').textContent = 'Sign in';
+    document.getElementById('signinText').textContent = 'Sign in';
 
     signinRequired.style.display = 'block';
     loadingDiv.style.display = 'none';
@@ -58,6 +66,8 @@ appengine.auth = function() {
  * param {Object} response Response to display
  */
 appengine.print = function(response) {
+  console.log("print function");
+
   var signinRequiredDiv = document.getElementById('signinRequired');
   var loadingDiv = document.getElementById('loadingData');
   var dataDiv = document.getElementById('data');
@@ -79,6 +89,8 @@ appengine.print = function(response) {
 
 // gets the air quality readings for the authenticated user
 appengine.listReadings = function(id) {
+  console.log("list readings function");
+
   var signinRequiredDiv = document.getElementById('signinRequired');
   var loadingDiv = document.getElementById('loadingData');
   var dataDiv = document.getElementById('data');
@@ -95,8 +107,10 @@ appengine.listReadings = function(id) {
 
 // Enables the button callbacks in the UI.
 appengine.setButtonClicks = function() {
+  console.log("set button clicks function");
+
   // get button variables
-  var signinButton = document.querySelector('#signinButton');
+  var signinButton = document.getElementById('signinButton');
 
   // add the click events
   signinButton.addEventListener('click', appengine.auth);
@@ -105,10 +119,13 @@ appengine.setButtonClicks = function() {
 // Initializes the application.
 // Loads the OAuth and airQuality APIs asynchronously
 appengine.init = function(apiRoot) {
+  console.log("init function");
+
   var apisToLoad;
   var callback = function() {
     if (--apisToLoad == 0) {
       appengine.setButtonClicks();
+      appengine.signin(true, appengine.userAuthed);
     }
   }
 
