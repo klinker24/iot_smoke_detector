@@ -53,11 +53,18 @@ public class RegistrationUtils extends BaseUtils {
                             .getItems()
                             .get(0);
 
-                    PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+                    sharedPrefs.edit()
                             .putString("pref_auth_token", account.getAuthToken())
                             .commit();
 
                     log(account.getAuthToken());
+
+                    boolean registeredWithPi = sharedPrefs.getBoolean("registered_with_pi", false);
+                    if (registeredWithPi) {
+                        return null;
+                    }
 
                     ((Activity) context).runOnUiThread(new Runnable() {
                         @Override
@@ -78,6 +85,10 @@ public class RegistrationUtils extends BaseUtils {
                                                                 editText.getText().toString(),
                                                                 account.getAuthToken()
                                                         );
+
+                                                        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                                                                .putBoolean("registered_with_pi", true)
+                                                                .commit();
                                                     } catch (Exception e) {
                                                         logError(e);
                                                     }
