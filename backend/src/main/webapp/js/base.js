@@ -49,15 +49,13 @@ appengine.auth = function() {
   } else {
     appengine.signedIn = false;
 
-    var signinRequiredDiv = document.getElementById('signinRequired');
-    var loadingDiv = document.getElementById('loadingData');
-    var dataDiv = document.getElementById('data');
+    var dataDiv = document.getElementById('dataDisplay');
+    var statusDiv = document.getElementById('dataStatus');
 
     document.getElementById('signinText').textContent = 'Sign in';
 
-    signinRequired.style.display = 'block';
-    loadingDiv.style.display = 'none';
-    dataDiv.style.display = 'none';
+    dataDiv.innerHTML = '';
+    statusDiv = 'Please sign in.';
   }
 };
 
@@ -68,21 +66,19 @@ appengine.auth = function() {
 appengine.print = function(response) {
   console.log("print function");
 
-  var signinRequiredDiv = document.getElementById('signinRequired');
-  var loadingDiv = document.getElementById('loadingData');
-  var dataDiv = document.getElementById('data');
-
-  signinRequired.style.display = 'none';
-  loadingDiv.style.display = 'none';
-  dataDiv.style.display = 'block';
+  var dataDiv = document.getElementById('dataDisplay');
+  var statusDiv = document.getElementById('dataStatus');
 
   if (response && response.error) {
-    dataDiv.innerHTML = '<b>Error Code:</b> ' + response.error.code + ' [' + response.error.message +']';
+    dataDiv.innerHTML = 'Account Setup Needed.';
+    statusDiv.innerHTML = 'Please use the Android app to set up an account.';
   } else {
     if (!response.items) {
-      dataDiv.innerHTML = 'No data has been recorded! </h2>';
+      dataDiv.innerHTML = '';
+      statusDiv.innerHTML = 'No data has been received.';
     } else {
       dataDiv.innerHTML = response.items[0].data + ' </h2>';
+      statusDiv.innerHTML = 'Everything looks good!';
     }
   }
 };
@@ -91,13 +87,11 @@ appengine.print = function(response) {
 appengine.listReadings = function(id) {
   console.log("list readings function");
 
-  var signinRequiredDiv = document.getElementById('signinRequired');
-  var loadingDiv = document.getElementById('loadingData');
-  var dataDiv = document.getElementById('data');
+  var dataDiv = document.getElementById('dataDisplay');
+  var statusDiv = document.getElementById('dataStatus');
 
-  signinRequired.style.display = 'none';
-  loadingDiv.style.display = 'block';
-  dataDiv.style.display = 'none';
+  dataDiv.innerHTML = '';
+  statusDiv.innerHTML = 'Loading data...'
 
   gapi.client.airQuality.listReadings().execute(
       function(resp) {
@@ -120,6 +114,14 @@ appengine.setButtonClicks = function() {
 // Loads the OAuth and airQuality APIs asynchronously
 appengine.init = function(apiRoot) {
   console.log("init function");
+
+  var dataDiv = document.getElementById('dataDisplay');
+  var statusDiv = document.getElementById('dataStatus');
+
+  document.getElementById('signinText').textContent = 'Sign in';
+
+  dataDiv.innerHTML = '';
+  statusDiv = 'Please sign in.';
 
   var apisToLoad;
   var callback = function() {
