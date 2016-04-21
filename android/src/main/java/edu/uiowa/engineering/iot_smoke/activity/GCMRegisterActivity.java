@@ -24,13 +24,14 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 
 import edu.uiowa.engineering.iot_smoke.Manifest;
 import edu.uiowa.engineering.iot_smoke.R;
+import edu.uiowa.engineering.iot_smoke.airQuality.AirQuality;
 import edu.uiowa.engineering.iot_smoke.registration.Registration;
 import edu.uiowa.engineering.iot_smoke.util.BaseUtils;
 import edu.uiowa.engineering.iot_smoke.util.RegistrationUtils;
 
 public abstract class GCMRegisterActivity extends AppCompatActivity {
 
-    private static final String PREF_ACCOUNT_NAME = "pref_account_name";
+    public static final String PREF_ACCOUNT_NAME = "pref_account_name";
     private static final int REQUEST_ACCOUNT_PICKER = 2;
     private static final int REQUEST_PERMISSIONS = 3;
 

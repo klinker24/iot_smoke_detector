@@ -29,6 +29,7 @@ android {
 
 dependencies {
     compile "com.android.support:appcompat-v7:${project.ANDROID_SUPPORT_VERSION}"
+    compile "com.android.support:recyclerview-v7:${project.ANDROID_SUPPORT_VERSION}"
     compile "com.google.android.gms:play-services-gcm:${project.GOOGLE_PLAY_SERVICES_VERSION}"
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
 
