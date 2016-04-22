@@ -72,7 +72,7 @@ void loop(void)
   digitalWrite(iled, LOW);
   
   adcvalue = filter(adcvalue);
-
+  
   // covert voltage (mv)
   voltage = (SYS_VOLTAGE / 1024.0) * adcvalue * 11;
 
@@ -86,7 +86,7 @@ void loop(void)
   {
     density = 0;
   }
-
+  
   // read temp and humidity
   int chk = DHT.read11(DHT11_PIN);
   delay(10);

@@ -67,7 +67,6 @@ server.listen(PORT, function() {
 // start searching for bluetooth devices
 noble.on('stateChange', function(state) {
   if(state === 'poweredOn') {
-    console.log('Powered on bluetooth!');
     noble.startScanning();
   }
 });
@@ -110,6 +109,7 @@ noble.on('discover', function(device) {
           url = url + encodeURIComponent(authToken);
 
           request.post(url, { form: {} }, function (error, response, body) {});
+          console.log("Uploaded data: " + data.toString());
         });
       });
     });
