@@ -24,22 +24,22 @@ The idea behind this project is to use the Arduino to read an analog signal with
 
 One of the principle components of any IoT application should be security. Ours application provides a number of security measures to keep your data safe. 
 
-- Registration is tied to your Google account  
+- **Registration is tied to your Google account**  
 Google App Engine has built in security measures that will force a user to be authenticated before accessing any data. Once these security measures are enabled, with every request, you get an associated user profile. This user profile is used to create an account for you within our app, and tie any data to your account. Registration in this application is done through the Android app.
 
-- Retrieving any air quality data requires authentication  
+- **Retrieving any air quality data requires authentication**  
 The same way that we have tied registration to an account, retreiving data requires you to be authenticated with your Google account. This can be done on the website or on the Android app.
 
-- SSL  
+- **SSL**  
 By default, Google App Engine uses SSL to encyrpt and protect the information you upload and receive from it.
 
-- Authenticating from Arduino/Raspberry Pi  
+- **Authenticating from Arduino/Raspberry Pi**  
 Since these are lower level devices without a user facing interface, we didn't want to make the user log in with their Google account to them. From the backend, we generate a unique auth token for every account and send it to the Raspberry Pi. We send this auth token over a LAN connection, so the only way an intruder can get that info is if they are on your network. When it is sent, the auth token also is encrypted with RSA encryption. The Pi broadcasts it's public key, which the Android app uses to encrypt, then, the Pi is able to decrypt with it's unique private key.
 
-- Usage of the auth token  
+- **Usage of the auth token**  
 Even if an intruder were able to grab your auth token when it is transfered from the Android app to the Pi, the only usage for this token is inserting data to the database. So, while they can insert fake values, which could still be a malicous case for an air quality detector, they won't have access to any data on your account and it will not compromise the security of any other accounts on the system.
 
-- Intercepting air quality data  
+- **Intercepting air quality data**  
 Since bluetooth isn't a very secure protocol, there is the possibility that someone listening could intercept - or add fake data - going between the Arduino and Raspberry Pi. This case is similar to the auth token usage. It has a malicous outcome, but will only affect the current user, and the Man-in-the-Middle has to be within bluetooth range.
 
 
