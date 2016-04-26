@@ -9,7 +9,10 @@ public class AirQualityRecord {
 
     @Id Long id;
     @Index private Long account;
-    private String data;
+
+    private float temperature;
+    private float relativeHumidity;
+    private float particleDensity;
 
     public Long getAccount() {
         return account;
@@ -19,11 +22,28 @@ public class AirQualityRecord {
         this.account = accountId;
     }
 
-    public String getData() {
-        return data;
+    public float getTemperature() {
+        return temperature;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setTemperature(float temperature) {
+        this.temperature = temperature;
     }
+
+    public float getParticleDensity() {
+        return particleDensity;
+    }
+
+    public void setParticleDensity(float particleDensity) {
+        this.particleDensity = particleDensity;
+    }
+
+    public float getRelativeHumidity() {
+        return relativeHumidity;
+    }
+
+    public void setRelativeHumidity(float relativeHumidity) {
+        this.relativeHumidity = relativeHumidity;
+    }
+
 }

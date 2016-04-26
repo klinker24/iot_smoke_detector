@@ -13,8 +13,11 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>edu.uiowa.engineering.iot_smoke.endpoint.RegistrationEndpoint,
-                edu.uiowa.engineering.iot_smoke.endpoint.AirQualityEndpoint</param-value>
+            <param-value>
+                edu.uiowa.engineering.iot_smoke.endpoint.RegistrationEndpoint,
+                edu.uiowa.engineering.iot_smoke.endpoint.AirQualityEndpoint,
+                edu.uiowa.engineering.iot_smoke.endpoint.AnalyticsEndpoint
+            </param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
