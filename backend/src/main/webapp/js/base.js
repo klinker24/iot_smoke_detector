@@ -77,8 +77,15 @@ appengine.print = function(response) {
       dataDiv.innerHTML = '';
       statusDiv.innerHTML = 'No data has been received.';
     } else {
-      dataDiv.innerHTML = response.items[0].data + ' </h2>';
-      statusDiv.innerHTML = 'Everything looks good!';
+      dataDiv.innerHTML = '<b>Temperature:</b> ' + response.items[0].temperature + '°F</br>' + 
+                          '<b>Relative Humidity:</b> ' + response.items[0].relativeHumidity + '%</br>' +
+                          '<b>Particle Density:</b> ' + response.items[0].particleDensity + ' </h2>';
+
+      if (response.items[0].temperature > 100) {
+        statusDiv.innerHTML = 'Woah, it is really hot - there may be an issue!';
+      } else {
+        statusDiv.innerHTML = 'Everything looks good!';
+      }
     }
   }
 };
@@ -96,6 +103,7 @@ appengine.listReadings = function(id) {
   gapi.client.airQuality.listReadings().execute(
       function(resp) {
         appengine.print(resp);
+        setTimeout(appengine.listReadings, 30000); // refresh the data every 30 seconds
       });
 };
 

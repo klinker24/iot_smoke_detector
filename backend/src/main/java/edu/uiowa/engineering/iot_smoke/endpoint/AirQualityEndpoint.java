@@ -63,7 +63,7 @@ public class AirQualityEndpoint {
         record.setParticleDensity(particleDensity);
 
         if (temperature > 100) {
-            notifyDevices(account, "Temperature too high!");
+            notifyDevices(account, "Temperature has reached an abnormal level (" + temperature + "°F)");
         }
 
         ofy().save().entity(record).now();
