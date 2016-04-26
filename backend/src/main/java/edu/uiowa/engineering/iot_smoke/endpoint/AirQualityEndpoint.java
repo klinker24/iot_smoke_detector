@@ -18,6 +18,7 @@ import com.google.appengine.api.oauth.OAuthRequestException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
@@ -107,6 +108,7 @@ public class AirQualityEndpoint {
                 .limit(100)
                 .list();
 
+        Collections.reverse(records);
         return CollectionResponse.<AirQualityRecord>builder().setItems(records).build();
     }
 
