@@ -59,7 +59,7 @@ public class AirQualityEndpoint {
 
         AirQualityRecord record = new AirQualityRecord();
         record.setAccount(account.getId());
-        record.setTemperature(temperature);
+        record.setTemperature((float) (temperature * 1.8 + 32));
         record.setRelativeHumidity(relativeHumidity);
         record.setParticleDensity(particleDensity);
 
