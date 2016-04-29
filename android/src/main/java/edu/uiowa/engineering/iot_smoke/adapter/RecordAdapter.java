@@ -30,7 +30,11 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
 
     @Override
     public void onBindViewHolder(RecordViewHolder holder, int position) {
-        holder.text.setText(records.get(position).getData());
+        holder.text.setText(
+                "Temperature:  " + records.get(position).getTemperature() + "°F\n" +
+                "Relative Humidity:  " + records.get(position).getRelativeHumidity() + "%\n" +
+                "Particle Density:  " + records.get(position).getParticleDensity()
+        );
     }
 
     @Override

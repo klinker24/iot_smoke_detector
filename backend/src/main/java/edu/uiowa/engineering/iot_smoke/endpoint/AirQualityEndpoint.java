@@ -18,6 +18,7 @@ import com.google.appengine.api.oauth.OAuthRequestException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
@@ -45,12 +46,10 @@ public class AirQualityEndpoint {
     private static final String API_KEY = System.getProperty("gcm.api.key");
 
     @ApiMethod(name = "insertReading")
-    public CollectionResponse<AirQualityRecord> insertReading(@Named("data") String data, @Named("authToken") String authToken)
+    public CollectionResponse<AirQualityRecord> insertReading(
+            @Named("temperature") float temperature, @Named("relativeHumidity") float relativeHumidity,
+            @Named("particleDensity") float particleDensity, @Named("authToken") String authToken)
             throws IOException, RuntimeException {
-
-        if(data == null || data.trim().length() == 0) {
-            throw new IOException("Data is empty.");
-        }
 
         AccountRecord account = DataSource.findAccountByAuthToken(authToken);
 
@@ -60,9 +59,13 @@ public class AirQualityEndpoint {
 
         AirQualityRecord record = new AirQualityRecord();
         record.setAccount(account.getId());
-        record.setData(data);
+        record.setTemperature((float) (temperature * 1.8 + 32));
+        record.setRelativeHumidity(relativeHumidity);
+        record.setParticleDensity(particleDensity);
 
-        notifyDevices(account, data);
+        if (temperature > 100) {
+            notifyDevices(account, "Temperature has reached an abnormal level (" + temperature + "°F)");
+        }
 
         ofy().save().entity(record).now();
 
@@ -105,6 +108,7 @@ public class AirQualityEndpoint {
                 .limit(100)
                 .list();
 
+        Collections.reverse(records);
         return CollectionResponse.<AirQualityRecord>builder().setItems(records).build();
     }
 

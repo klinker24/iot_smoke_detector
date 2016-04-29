@@ -67,7 +67,6 @@ server.listen(PORT, function() {
 // start searching for bluetooth devices
 noble.on('stateChange', function(state) {
   if(state === 'poweredOn') {
-    console.log('Powered on bluetooth!');
     noble.startScanning();
   }
 });
@@ -104,12 +103,19 @@ noble.on('discover', function(device) {
         // wait to get data from the arduino and upload it to server where we can parse it
         uartRx.notify(true);
         uartRx.on('read', function(data, isNotification) {
+          var array = data.toString().split(",");
+
           var url = "https://uiowa-iot-smoke.appspot.com/_ah/api/airQuality/v1/collectionresponse_airqualityrecord/";
-          url = url + encodeURIComponent(data.toString());
+          url = url + encodeURIComponent(array[1]);
+          url = url + "/";
+          url = url + encodeURIComponent(array[2]);
+          url = url + "/";
+          url = url + encodeURIComponent(array[0]);
           url = url + "/";
           url = url + encodeURIComponent(authToken);
 
           request.post(url, { form: {} }, function (error, response, body) {});
+          console.log("Uploaded data: " + data.toString());
         });
       });
     });
