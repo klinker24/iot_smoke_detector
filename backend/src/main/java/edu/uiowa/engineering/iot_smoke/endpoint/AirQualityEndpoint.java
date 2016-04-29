@@ -67,6 +67,10 @@ public class AirQualityEndpoint {
             notifyDevices(account, "Temperature has reached an abnormal level (" + temperature + "°F)");
         }
 
+        if (particleDensity > 25) {
+            notifyDevices(account, "Based on our analysis, particle density has reached a harmful level!");
+        }
+
         ofy().save().entity(record).now();
 
         return CollectionResponse
