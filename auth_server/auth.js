@@ -76,7 +76,7 @@ noble.on('stateChange', function(state) {
 noble.on('discover', function(device) {
 
   // TODO change this to the correct mac address
-  if (device.address === 'e3:0e:74:88:38:5e') {
+  if (device.address === 'f0:5f:f6:ef:43:ef') {
     console.log('Found device: ' + device.address);
 
     // found our device, now connect to it
