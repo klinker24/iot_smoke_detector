@@ -57,9 +57,11 @@ public class AirQualityEndpoint {
             throw new RuntimeException("Invalid Auth Token.");
         }
 
+        temperature = (float) (temperature * 1.8 + 32);
+
         AirQualityRecord record = new AirQualityRecord();
         record.setAccount(account.getId());
-        record.setTemperature((float) (temperature * 1.8 + 32));
+        record.setTemperature(temperature);
         record.setRelativeHumidity(relativeHumidity);
         record.setParticleDensity(particleDensity);
 
