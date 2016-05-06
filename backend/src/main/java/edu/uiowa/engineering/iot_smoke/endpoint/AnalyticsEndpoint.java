@@ -5,8 +5,10 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 
+import java.util.Collections;
 import java.util.List;
 
+import edu.uiowa.engineering.iot_smoke.TimeCompare;
 import edu.uiowa.engineering.iot_smoke.data.AirQualityRecord;
 
 import static edu.uiowa.engineering.iot_smoke.OfyService.ofy;
@@ -27,6 +29,8 @@ public class AnalyticsEndpoint {
         List<AirQualityRecord> records = ofy().load()
                 .type(AirQualityRecord.class)
                 .list();
+
+        Collections.sort(records, new TimeCompare());
 
         return CollectionResponse.<AirQualityRecord>builder().setItems(records).build();
     }

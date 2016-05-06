@@ -17,12 +17,14 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.oauth.OAuthRequestException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
 
+import edu.uiowa.engineering.iot_smoke.TimeCompare;
 import edu.uiowa.engineering.iot_smoke.Constants;
 import edu.uiowa.engineering.iot_smoke.DataSource;
 import edu.uiowa.engineering.iot_smoke.data.AccountRecord;
@@ -59,26 +61,34 @@ public class AirQualityEndpoint {
 
         temperature = (float) (temperature * 1.8 + 32);
 
-        AirQualityRecord record = new AirQualityRecord();
-        record.setAccount(account.getId());
-        record.setTemperature(temperature);
-        record.setRelativeHumidity(relativeHumidity);
-        record.setParticleDensity(particleDensity);
+        if (temperature != 75.2) {
+            AirQualityRecord record = new AirQualityRecord();
+            record.setAccount(account.getId());
+            record.setTemperature(temperature);
+            record.setRelativeHumidity(relativeHumidity);
+            record.setParticleDensity(particleDensity);
+            record.setTime(System.nanoTime());
 
-        if (temperature > 100) {
-            notifyDevices(account, "Temperature has reached an abnormal level (" + temperature + "°F)");
+            if (temperature > 100) {
+                notifyDevices(account, "Temperature has reached an abnormal level (" + temperature + "°F)");
+            }
+
+            if (particleDensity > 25) {
+                notifyDevices(account, "Based on our analysis, particle density has reached a harmful level!");
+            }
+
+            ofy().save().entity(record).now();
+
+            return CollectionResponse
+                    .<AirQualityRecord>builder()
+                    .setItems(Arrays.asList(record))
+                    .build();
+        } else {
+            return CollectionResponse
+                    .<AirQualityRecord>builder()
+                    .setItems(new ArrayList<AirQualityRecord>())
+                    .build();
         }
-
-        if (particleDensity > 25) {
-            notifyDevices(account, "Based on our analysis, particle density has reached a harmful level!");
-        }
-
-        ofy().save().entity(record).now();
-
-        return CollectionResponse
-                .<AirQualityRecord>builder()
-                .setItems(Arrays.asList(record))
-                .build();
     }
 
     private void notifyDevices(AccountRecord account, String message) throws IOException {
@@ -111,10 +121,9 @@ public class AirQualityEndpoint {
         List<AirQualityRecord> records = ofy().load()
                 .type(AirQualityRecord.class)
                 .filter("account", account.getId())
-                .limit(100)
                 .list();
 
-        Collections.reverse(records);
+        Collections.sort(records, new TimeCompare());
         return CollectionResponse.<AirQualityRecord>builder().setItems(records).build();
     }
 

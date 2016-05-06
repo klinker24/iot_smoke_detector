@@ -13,6 +13,7 @@ public class AirQualityRecord {
     private float temperature;
     private float relativeHumidity;
     private float particleDensity;
+    @Index private long time;
 
     public Long getAccount() {
         return account;
@@ -44,6 +45,14 @@ public class AirQualityRecord {
 
     public void setRelativeHumidity(float relativeHumidity) {
         this.relativeHumidity = relativeHumidity;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 
 }
